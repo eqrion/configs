@@ -1,0 +1,16 @@
+mk_add_options MOZ_MAKE_FLAGS="-j8"
+ac_add_options --enable-application=browser
+
+mk_add_options AUTOCLOBBER=1
+
+# mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj/unit64
+# ac_add_options --enable-optimize --enable-debug
+# ac_add_options --target=x86_64-pc-mingw32
+# ac_add_options --host=x86_64-pc-mingw32
+
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj/debug64
+ac_add_options --disable-optimize --enable-debug
+ac_add_options --target=x86_64-pc-mingw32
+ac_add_options --host=x86_64-pc-mingw32
+
+ac_add_options --enable-webrender
