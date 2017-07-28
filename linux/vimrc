@@ -9,9 +9,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'rust-lang/rust.vim'
-Plugin 'Valloric/YouCompleteMe'
 Plugin 'ctrlp.vim'
-Plugin 'mileszs/ack.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
@@ -20,15 +18,12 @@ call vundle#end()
 "
 " Plugin Settings
 "
-
-let g:ycm_rust_src_path = '/usr/local/src/rust/src'
-
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme = 'papercolor'
 
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
+let g:ctrlp_extensions = ['tag', 'buffertag']
+let g:ctrlp_max_files = 0
+let g:ctrlp_clear_cache_on_exit = 0
 
 filetype plugin indent on
 
@@ -51,28 +46,35 @@ set splitright        " split vertical to right
 set splitbelow        " split horizontal to below
 
 set expandtab         " expand tabs to spaces
-set shiftwidth=2      " 2 character spaces
-set tabstop=2         " 2 character tab stops
+set shiftwidth=4      " 4 character spaces
+set tabstop=4         " 4 character tab stops
 
 set incsearch         " show matches while typing
 set hlsearch          " highlight search matches
 set ignorecase        " search case insensitive
 set smartcase         " but not if pattern has upper case characters
 
+set wrap!
+
 "
 " Shortcuts
 "
 
-map <leader>pt :NerdTreeToggle<cr>
+inoremap jk <Esc>
 
-map <C-r> :CtrlPBufTag
-map <C-R> :CtrlPTag
+map <leader>pt :NERDTreeToggle<cr>
 
-map <leader>tn :tabnew<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
+let g:ctrlp_cmd = 'CtrlPMixed'
+map <c-r> :CtrlPBufTag<cr>
+map <c-t> :CtrlPTag<cr>
 
-map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+map <leader>o o <Esc>dlo<Esc>k$a
+map <leader>O O <Esc>dlO<Esc>j$a
+map <leader>n o<Esc>
+map <leader>N O<Esc>
+
+map <leader>h :help 
+
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
