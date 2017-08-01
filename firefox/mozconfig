@@ -4,7 +4,9 @@ mk_add_options AUTOCLOBBER=1
 # ac_add_options --target=x86_64-pc-mingw32
 # ac_add_options --host=x86_64-pc-mingw32
 
-# ac_add_options --with-ccache=/usr/bin/ccache
+# CC="ccache icecc gcc"
+# CXX="ccache icecc g++"
+# mk_add_options 'export ICECC_CARET_WORKAROUND=0'
 
 # CFLAGS="-fdiagnostics-color=always"
 # CXXFLAGS="-fdiagnostics-color=always"
