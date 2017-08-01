@@ -62,21 +62,22 @@ set wrap!
 
 inoremap jk <Esc>
 
-map <leader>pt :NERDTreeToggle<cr>
+noremap <leader>pt :NERDTreeToggle<cr>
 
 let g:ctrlp_cmd = 'CtrlPMixed'
-map <c-r> :CtrlPBufTag<cr>
-map <c-t> :CtrlPTag<cr>
+noremap <c-r> :CtrlPBufTag<cr>
+noremap <c-t> :CtrlPTag<cr>
+noremap <c-y> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 
-map <leader>o o <Esc>dlo<Esc>k$a
-map <leader>O O <Esc>dlO<Esc>j$a
-map <leader>n o<Esc>
-map <leader>N O<Esc>
+noremap <leader>o o <Esc>dlo<Esc>k$a
+noremap <leader>O O <Esc>dlO<Esc>j$a
+noremap <leader>n o<Esc>
+noremap <leader>N O<Esc>
 
-map <leader>h :help 
+noremap <leader>h :help 
 
-map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
+noremap <leader>e :edit <c-r>=expand("%:p:h")<cr>/
+noremap <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 "
 " Load Vim Configuration for Projects
