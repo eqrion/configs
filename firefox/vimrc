@@ -1,4 +1,5 @@
 let g:ctrlp_custom_ignore = 'accessible/\|addon-sdk/\|caps/\|config/\|db/\|devtools/\|embedding/\|extensions/\|gradle/\|hal/\|intl/\|modules/\|mozglue/\|netwerk/\|obj/\|parser/\|rdf/\|servo/\|storage/\|startup_cache/\|taskcluster/\|testing/\|third_party/\|tools/\|uriloader/\|vendor/'
+let g:ctrlp_max_files = 0
 
 set shiftwidth=2
 set tabstop=2
