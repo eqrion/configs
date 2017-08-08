@@ -60,9 +60,10 @@ set wrap!
 " Shortcuts
 "
 
-inoremap jk <Esc>
+inoremap jj <Esc>
 
-noremap <leader>pt :NERDTreeToggle<cr>
+noremap <leader>p :NERDTreeToggle<cr>
+noremap <leader>/ :nohl
 
 let g:ctrlp_cmd = 'CtrlPMixed'
 noremap <c-r> :CtrlPBufTag<cr>
@@ -78,6 +79,19 @@ noremap <leader>h :help
 
 noremap <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 noremap <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+noremap <leader>tn :tabnew<cr>
+noremap <leader>tc :tabc<cr>
+noremap <leader>tl :tabn<cr>
+noremap <leader>th :tabp<cr>
+noremap <leader>te :tabe<cr>
+
+"
+" Rusty Tags
+"
+
+autocmd BufRead *.rs :setlocal tags=./TAGS;/,$RUST_SRC_PATH/TAGS
+autocmd BufWrite *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" <bar> redraw
 
 "
 " Load Vim Configuration for Projects

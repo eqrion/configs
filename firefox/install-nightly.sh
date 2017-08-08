@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RELEASE=56.0a1
+RELEASE=57.0a1
 TARBALL="firefox-$RELEASE.en-US.linux-x86_64.tar.bz2"
 
 wget https://ftp.mozilla.org/pub/firefox/nightly/latest-mozilla-central/$TARBALL
