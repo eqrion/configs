@@ -1,0 +1,115 @@
+#!/bin/python
+from datetime import date,datetime,timedelta
+import os
+import json
+import argparse
+import subprocess
+
+now = datetime.now()
+today = now.date()
+yesterday = today - timedelta(days=1)
+
+script_dir = os.path.abspath(os.path.dirname(__file__))
+work_dir = os.environ.get('WORK_LOG_DIR', os.path.join(script_dir, 'log'))
+
+default_editor = 'vim'
+
+if not os.path.exists(work_dir):
+    os.mkdir(work_dir)
+
+# Helpers
+
+def read_log(date):
+    log_path = os.path.join(work_dir, str(date))
+    if os.path.exists(log_path):
+        items = json.load(open(log_path, 'r'))
+    else:
+        items = {}
+    return items
+
+def read_logs(start, end):
+    logs = []
+    while start <= end:
+        logs.append((start, read_log(start)))
+        start = start + timedelta(days=1)
+    return logs
+
+def write_log(date, items):
+    log_path = os.path.join(work_dir, str(date))
+    json.dump(items, open(log_path, 'w'))
+
+def parse_datespec(datespec):
+    datespec = datespec.strip()
+    if datespec == '.':
+        return today
+    elif datespec.startswith('.~'):
+        datespec = datespec[2:]
+        delta = int(datespec)
+        return today - timedelta(days=delta)
+    else:
+        return date.strptime(datespec, '%d-%m-%y')
+
+# Subcommands
+
+def work_item(args):
+    todays_log = read_log(today)
+    todays_log[now.time().strftime('%H:%M:%S.%f')] = args.message
+    write_log(today, todays_log)
+
+def work_log(args):
+    if (not 'start' in args and not 'end' in args) or (args.start == '' and args.end == ''):
+        end = today
+        if today.weekday() == 0:
+            start = today - timedelta(days=3)
+        else:
+            start = yesterday
+    else:
+        if args.start != '':
+            start = parse_datespec(args.start)
+        else:
+            start = yesterday
+        if args.end != '':
+            end = parse_datespec(args.end)
+        else:
+            end = today
+
+        if start > end:
+            temp = start
+            start = end
+            end = temp
+
+    logs = read_logs(start, end)
+
+    for date, log in logs:
+        print('{}:'.format(date))
+        for time, item in log.items():
+            time = datetime.strptime(time, '%H:%M:%S.%f')
+            time = datetime.strftime(time, '%H:%M')
+            print('\t{} - {}'.format(time, item))
+
+def work_edit(args):
+    log_path = os.path.join(work_dir, str(today))
+    editor = os.environ.get('EDITOR', default_editor)
+    subprocess.run([editor, log_path])
+
+# Parse the arguments and do the work
+
+parser = argparse.ArgumentParser(description='Log and view work items.')
+parser.set_defaults(func=work_log)
+
+subparsers = parser.add_subparsers()
+
+item_parser = subparsers.add_parser('item')
+item_parser.add_argument('message', type=str, default='')
+item_parser.set_defaults(func=work_item)
+
+log_parser = subparsers.add_parser('log')
+log_parser.add_argument('--start', type=str, default='')
+log_parser.add_argument('--end', type=str, default='')
+log_parser.set_defaults(func=work_log)
+
+edit_parser = subparsers.add_parser('edit')
+edit_parser.set_defaults(func=work_edit)
+
+args = parser.parse_args()
+args.func(args)
