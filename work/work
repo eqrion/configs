@@ -1,5 +1,5 @@
 #!/bin/python
-from datetime import date,datetime,timedelta
+from datetime import date,datetime,timedelta,time
 import os
 import json
 import argparse
@@ -52,9 +52,18 @@ def parse_datespec(datespec):
 # Subcommands
 
 def work_item(args):
-    todays_log = read_log(today)
-    todays_log[now.time().strftime('%H:%M:%S.%f')] = args.message
-    write_log(today, todays_log)
+    if args.yesterday:
+        yesterdays_log = read_log(yesterday)
+        yesterdays_times = sorted(map(lambda x: datetime.strptime(x, '%H:%M:%S.%f'), list(yesterdays_log.keys())))
+        new_entry_time = time(5,0,0)
+        if len(yesterdays_times) > 0:
+            new_entry_time = yesterdays_times[-1] + timedelta(seconds = 1)
+        yesterdays_log[new_entry_time.strftime('%H:%M:%S.%f')] = args.message
+        write_log(yesterday, yesterdays_log)
+    else:
+        todays_log = read_log(today)
+        todays_log[now.time().strftime('%H:%M:%S.%f')] = args.message
+        write_log(today, todays_log)
 
 def work_log(args):
     if (not 'start' in args and not 'end' in args) or (args.start == '' and args.end == ''):
@@ -88,7 +97,12 @@ def work_log(args):
             print('\t{} - {}'.format(time, item))
 
 def work_edit(args):
-    log_path = os.path.join(work_dir, str(today))
+    file_name = ''
+    if args.yesterday:
+        file_name = str(yesterday)
+    else:
+        file_name = str(today)
+    log_path = os.path.join(work_dir, file_name)
     editor = os.environ.get('EDITOR', default_editor)
     subprocess.run([editor, log_path])
 
@@ -101,6 +115,7 @@ subparsers = parser.add_subparsers()
 
 item_parser = subparsers.add_parser('item')
 item_parser.add_argument('message', type=str, default='')
+item_parser.add_argument('--yesterday', action='store_true')
 item_parser.set_defaults(func=work_item)
 
 log_parser = subparsers.add_parser('log')
@@ -109,6 +124,7 @@ log_parser.add_argument('--end', type=str, default='')
 log_parser.set_defaults(func=work_log)
 
 edit_parser = subparsers.add_parser('edit')
+edit_parser.add_argument('--yesterday', action='store_true')
 edit_parser.set_defaults(func=work_edit)
 
 args = parser.parse_args()
