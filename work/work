@@ -47,7 +47,7 @@ def parse_datespec(datespec):
         delta = int(datespec)
         return today - timedelta(days=delta)
     else:
-        return date.strptime(datespec, '%d-%m-%y')
+        return datetime.strptime(datespec, '%m-%d-%y').date()
 
 # Subcommands
 
