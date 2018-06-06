@@ -1,4 +1,5 @@
-#!/bin/python
+#!/usr/bin/env python
+
 from datetime import date,datetime,timedelta,time
 import os
 import json
@@ -17,7 +18,7 @@ default_editor = 'vim'
 if not os.path.exists(work_dir):
     os.mkdir(work_dir)
 
-# Helpers
+## Core Utilities
 
 def read_log(date):
     log_path = os.path.join(work_dir, str(date))
@@ -49,7 +50,9 @@ def parse_datespec(datespec):
     else:
         return datetime.strptime(datespec, '%m-%d-%y').date()
 
-# Subcommands
+## Commands
+
+# Adds a work item to the log
 
 def work_item(args):
     if args.yesterday:
@@ -64,6 +67,8 @@ def work_item(args):
         todays_log = read_log(today)
         todays_log[now.time().strftime('%H:%M:%S.%f')] = args.message
         write_log(today, todays_log)
+
+# Prints out a listing of the work log
 
 def work_log(args):
     if (not 'start' in args and not 'end' in args) or (args.start == '' and args.end == ''):
@@ -91,10 +96,12 @@ def work_log(args):
 
     for date, log in logs:
         print('{}:'.format(date))
-        for time, item in log.items():
+        for time, item in sorted(log.items()):
             time = datetime.strptime(time, '%H:%M:%S.%f')
             time = datetime.strftime(time, '%H:%M')
             print('\t{} - {}'.format(time, item))
+
+# Opens an editor for the work log file
 
 def work_edit(args):
     file_name = ''
@@ -106,26 +113,31 @@ def work_edit(args):
     editor = os.environ.get('EDITOR', default_editor)
     subprocess.run([editor, log_path])
 
+## Driver
+
 # Parse the arguments and do the work
+def driver():
+    parser = argparse.ArgumentParser(description='Log and view work items.')
+    parser.set_defaults(func=work_log)
 
-parser = argparse.ArgumentParser(description='Log and view work items.')
-parser.set_defaults(func=work_log)
+    subparsers = parser.add_subparsers()
 
-subparsers = parser.add_subparsers()
+    item_parser = subparsers.add_parser('item')
+    item_parser.add_argument('message', type=str, default='')
+    item_parser.add_argument('--yesterday', action='store_true')
+    item_parser.set_defaults(func=work_item)
 
-item_parser = subparsers.add_parser('item')
-item_parser.add_argument('message', type=str, default='')
-item_parser.add_argument('--yesterday', action='store_true')
-item_parser.set_defaults(func=work_item)
+    log_parser = subparsers.add_parser('log')
+    log_parser.add_argument('--start', type=str, default='')
+    log_parser.add_argument('--end', type=str, default='')
+    log_parser.set_defaults(func=work_log)
 
-log_parser = subparsers.add_parser('log')
-log_parser.add_argument('--start', type=str, default='')
-log_parser.add_argument('--end', type=str, default='')
-log_parser.set_defaults(func=work_log)
+    edit_parser = subparsers.add_parser('edit')
+    edit_parser.add_argument('--yesterday', action='store_true')
+    edit_parser.set_defaults(func=work_edit)
 
-edit_parser = subparsers.add_parser('edit')
-edit_parser.add_argument('--yesterday', action='store_true')
-edit_parser.set_defaults(func=work_edit)
+    args = parser.parse_args()
+    args.func(args)
 
-args = parser.parse_args()
-args.func(args)
+if __name__ == "__main__":
+    driver()
